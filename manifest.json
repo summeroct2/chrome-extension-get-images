@@ -1,0 +1,13 @@
+{
+  "name": "图片捕手",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "browser_action": {
+    "default_title": "图片捕手",
+    "default_popup": "index.html"
+  },
+  "content_scripts": [{
+    "js": ["js/index.js"],
+    "matches": ["http://*/*", "https://*/*"]
+  }]
+}
