@@ -1,6 +1,6 @@
 {
   "name": "抓图",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "manifest_version": 2,
   "description": "抓取图片",
   "browser_action": {
@@ -15,6 +15,8 @@
   "background": {},
   "permissions": [
     "tabs",
-    "downloads"
+    "downloads",
+    "http://detail.1688.com/*",
+    "https://detail.1688.com/*"
   ]
 }

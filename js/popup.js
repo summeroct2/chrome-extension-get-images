@@ -2,7 +2,7 @@ var appContent = document.querySelector('.app-content')
 var btnDownload = document.querySelector('.btn-download')
 
 chrome.browserAction.setBadgeText({text: '在抓'})
-// chrome.browserAction.setBadgeBackgroundColor({color: []})
+chrome.browserAction.setBadgeBackgroundColor({color: '#52c02e'})
 
 // 发送执行指令: doit
 chrome.tabs.query({
@@ -11,6 +11,9 @@ chrome.tabs.query({
 }, function (tabs) {
   chrome.tabs.sendMessage(tabs[0].id, 'doit', function (res) {
     // 收到接收方接收成功的反馈消息
+    if (!res) {
+      chrome.browserAction.setBadgeText({text: ''})
+    }
   })
 })
 
@@ -27,15 +30,13 @@ function getSafeDir(docTitle) {
 
 function saveAs(url, filename) {
   if (chrome.downloads) {
-    var dir = getSafeDir(document.title) + "/" + filename
-
+    var dir = getSafeDir(document.title) + '/' + filename
     chrome.downloads.download({
       url: url,
       filename: dir,
-      saveAs: !1,
+      saveAs: false,
       conflictAction: "uniquify"
     }, function(t) {})
-
   } else {
     var a = document.createElementNS("http://www.w3.org/1999/xhtml", "a")
     a.href = url,
@@ -50,31 +51,37 @@ chrome.runtime.onMessage.addListener(function (req, sender, Res) {
   chrome.browserAction.setBadgeText({text: ''})
 
   // 渲染商品KV图
-  var kvSection = document.createElement('dl')
-  kvSection.className = 'kv'
-  kvSection.innerHTML = '<dt>KV:</dt><dd></dd>'
-  req.kv.forEach(function(url, i){
-    kvSection.querySelector('dd').appendChild( imgRender(url, 50) )
-  })
-  appContent.appendChild(kvSection)
+  if (req.kv) {
+    var kvSection = document.createElement('dl')
+    kvSection.className = 'kv'
+    kvSection.innerHTML = '<dt>KV:</dt><dd></dd>'
+    req.kv.forEach(function(url, i){
+      kvSection.querySelector('dd').appendChild( imgRender(url, 50) )
+    })
+    appContent.appendChild(kvSection)
+  }
 
   // 渲染商品颜色图
-  var colorSection = document.createElement('dl')
-  colorSection.className = 'color'
-  colorSection.innerHTML = '<dt>颜色:</dt><dd></dd>'
-  req.color.forEach(function(url, i){
-    colorSection.querySelector('dd').appendChild( imgRender(url, 50) )
-  })
-  appContent.appendChild(colorSection)
+  if (req.color) {
+    var colorSection = document.createElement('dl')
+    colorSection.className = 'color'
+    colorSection.innerHTML = '<dt>颜色:</dt><dd></dd>'
+    req.color.forEach(function(url, i){
+      colorSection.querySelector('dd').appendChild( imgRender(url, 50) )
+    })
+    appContent.appendChild(colorSection)
+  }
 
   // 渲染商品画报
-  var descSection = document.createElement('dl')
-  descSection.className = 'desc'
-  descSection.innerHTML = '<dt>画报:</dt><dd></dd>'
-  req.desc.forEach(function(url, i){
-    descSection.querySelector('dd').appendChild( imgRender(url, 100) )
-  })
-  appContent.appendChild(descSection)
+  if (req.desc) {
+    var descSection = document.createElement('dl')
+    descSection.className = 'desc'
+    descSection.innerHTML = '<dt>画报:</dt><dd></dd>'
+    req.desc.forEach(function(url, i){
+      descSection.querySelector('dd').appendChild( imgRender(url, 100) )
+    })
+    appContent.appendChild(descSection)
+  }
 })
 
 btnDownload.onclick = function () {
