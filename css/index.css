@@ -1,0 +1,30 @@
+.app-pop {
+  width: 398px;
+}
+
+.app-pop .app-content dl {
+  margin: 20px 0;
+  padding: 0;
+}
+
+.app-pop .app-content dl dt,
+.app-pop .app-content dl dd {
+  margin: 0;
+  padding: 0;
+}
+.app-pop .app-content dl dd {
+  padding: 5px;
+  background-color: #eee;
+}
+
+.app-pop .app-foot {
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #eee;
+}
+
+.app-pop .app-foot .btn-download {
+  width: 200px;
+  height: 40px;
+}

@@ -2,13 +2,18 @@
 <html>
 <head>
   <meta charset="utf-8"/>
-  <title>图片捕手</title>
+  <title>抓图</title>
+  <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
-  图片捕手
-  <script>
-    var elem = document.getElmentsByClassName('de-description-detail')
-    console.log(elem)
-  </script>
+  <div class="app-pop">
+    <h1 class="app-head">抓图</h1>
+    <div class="app-content"></div>
+    <div class="app-foot">
+      <button type="button" class="btn-download">保存</button>
+    </div>
+  </div>
+
+  <script src="js/popup.js" charset="utf-8"></script>
 </body>
 </html>

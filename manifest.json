@@ -1,13 +1,20 @@
 {
-  "name": "图片捕手",
+  "name": "抓图",
   "version": "1.0.0",
   "manifest_version": 2,
+  "description": "抓取图片",
   "browser_action": {
-    "default_title": "图片捕手",
+    "default_title": "抓图",
     "default_popup": "index.html"
   },
   "content_scripts": [{
-    "js": ["js/index.js"],
-    "matches": ["http://*/*", "https://*/*"]
-  }]
+    "js": ["js/content.js"],
+    "matches": ["http://detail.1688.com/*", "https://detail.1688.com/*"],
+    "run_at": "document_end"
+  }],
+  "background": {},
+  "permissions": [
+    "tabs",
+    "downloads"
+  ]
 }
