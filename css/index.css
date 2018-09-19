@@ -31,7 +31,7 @@ html, body {
 .app-pop .app-content dl dd {
   display: flex;
   flex-wrap: wrap;
-  background-color: #eee;
+  background-color: #f6f6f6;
 }
 
 .app-pop .app-content .cell {
@@ -63,17 +63,16 @@ html, body {
   bottom: 0;
   width: 100%;
   padding: 10px 15px;
-  background-color: #4fc08d;
+  background-color: #f6f6f6;
 }
 
 .app-pop .app-foot .btn-download {
-  color: #4fc08d;
+  color: #fff;
   font-weight: 500;
   font-size: 14px;
-  padding: 8px 16px 10px 16px;
+  padding: 6px 16px;
   cursor: pointer;
   border: none;
   border-radius: 2px;
-  background-color: white;
-  box-shadow: 0 2px 3px 0 rgba(0,0,0,0.2);
+  background-color: #4fc08d;
 }

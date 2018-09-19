@@ -47,8 +47,8 @@ function getSafeDir(docTitle) {
 }
 
 function saveAs(url, filename) {
+  var dir = getSafeDir(document.title) + '/' + filename
   if (chrome.downloads) {
-    var dir = getSafeDir(document.title) + '/' + filename
     chrome.downloads.download({
       url: url,
       filename: dir,
