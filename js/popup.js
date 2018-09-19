@@ -3,13 +3,19 @@ var btnDownload = document.querySelector('.btn-download')
 
 function imgRender(imgItem, width) {
   var img = document.createElement('img')
+  var cell = document.createElement('span')
+
   img.src = imgItem.img
   imgItem.name && (img.title = imgItem.name, img.alt = imgItem.name)
   width && (img.width = width)
-  return img
+
+  cell.className = 'cell'
+  cell.appendChild(img)
+
+  return cell
 }
 
-function createSection (sectionObj, type, imgWidth) {
+function createSection (sectionObj, type) {
   var section = document.createElement('dl')
   var typeName
 
@@ -31,7 +37,7 @@ function createSection (sectionObj, type, imgWidth) {
   section.innerHTML = `<dt>${typeName}:</dt><dd></dd>`
 
   sectionObj.forEach(function(item, i){
-    section.querySelector('dd').appendChild( imgRender(item, imgWidth) )
+    section.querySelector('dd').appendChild( imgRender(item) )
   })
   return section
 }
@@ -79,11 +85,11 @@ chrome.runtime.onMessage.addListener(function (req, sender, Res) {
   chrome.browserAction.setBadgeText({text: ''})
 
   // 渲染商品KV图
-  req.kv && appContent.appendChild( createSection(req.kv, 'kv', 50) )
+  req.kv && appContent.appendChild( createSection(req.kv, 'kv') )
   // 渲染商品颜色图
-  req.color && appContent.appendChild( createSection(req.color, 'color', 50) )
+  req.color && appContent.appendChild( createSection(req.color, 'color') )
   // 渲染商品画报
-  req.desc && appContent.appendChild( createSection(req.desc, 'desc', 100) )
+  req.desc && appContent.appendChild( createSection(req.desc, 'desc') )
 })
 
 btnDownload.onclick = function () {

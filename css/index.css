@@ -1,5 +1,21 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
 .app-pop {
-  width: 398px;
+  min-width: 453px;
+}
+
+.app-pop .app-head {
+  margin: 0;
+  color: currentColor;
+  font-weight: 300;
+  text-align: center;
+  font-family: 'Roboto', Arial, sans-serif;
+}
+
+.app-pop .app-content {
+  padding: 10px 10px 58px;
 }
 
 .app-pop .app-content dl {
@@ -13,18 +29,51 @@
   padding: 0;
 }
 .app-pop .app-content dl dd {
-  padding: 5px;
+  display: flex;
+  flex-wrap: wrap;
   background-color: #eee;
+}
+
+.app-pop .app-content .cell {
+  display: block;
+  padding: 5px;
+  border: 1px solid rgba(0, 0, 0, .05);
+  background-color: rgba(255, 255, 255, .2);
+}
+.app-pop .app-content .cell:last-child {
+  margin-right: 0;
+}
+.app-pop .app-content .cell img {
+  float: left;
+  width: 100%;
+}
+
+.app-pop .app-content .kv .cell,
+.app-pop .app-content .color .cell {
+  width: 50px;
+}
+
+.app-pop .app-content .desc .cell {
+  width: 100px;
 }
 
 .app-pop .app-foot {
+  position: fixed;
   left: 0;
   bottom: 0;
   width: 100%;
-  background-color: #eee;
+  padding: 10px 15px;
+  background-color: #4fc08d;
 }
 
 .app-pop .app-foot .btn-download {
-  width: 200px;
-  height: 40px;
+  color: #4fc08d;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 8px 16px 10px 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 2px;
+  background-color: white;
+  box-shadow: 0 2px 3px 0 rgba(0,0,0,0.2);
 }
