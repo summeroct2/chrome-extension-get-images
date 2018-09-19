@@ -96,18 +96,24 @@ btnDownload.onclick = function () {
   var imgSection = appContent.querySelectorAll('dl')
 
   imgSection.forEach(function (section) {
-    var sectionName = section.className
+    var sectionClass = section.className
     var imgs = section.querySelectorAll('img')
 
     if (!imgs.length) {
       return false
     }
 
-    imgs.forEach(function (img) {
+    imgs.forEach(function (img, index) {
       var imgsrc = img.src
       var nameIndex = imgsrc.lastIndexOf('/')
       var filename = imgsrc.substr(nameIndex + 1)
-      var colorName = img.title ? (img.title + '_') : ''
+      var colorName = img.title ? `${img.title}_` : ''
+      var sectionName = sectionClass
+
+      if (sectionClass === 'desc') {
+        // 画报图名称添加索引序号，使保存后的文件顺序与页面中的顺序相同
+        sectionName = `${sectionName}_${index}`
+      }
 
       saveAs(imgsrc, sectionName + '_' + colorName + filename)
     })
