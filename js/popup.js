@@ -28,6 +28,10 @@ function createSection (sectionObj, type) {
       typeName = '颜色'
       break;
 
+    case 'model':
+      typeName = '型号'
+      break;
+
     case 'desc':
       typeName = '画报'
       break;
@@ -88,6 +92,8 @@ chrome.runtime.onMessage.addListener(function (req, sender, Res) {
   req.kv && appContent.appendChild( createSection(req.kv, 'kv') )
   // 渲染商品颜色图
   req.color && appContent.appendChild( createSection(req.color, 'color') )
+  // 渲染商品型号图
+  req.model && appContent.appendChild( createSection(req.model, 'model') )
   // 渲染商品画报
   req.desc && appContent.appendChild( createSection(req.desc, 'desc') )
 })

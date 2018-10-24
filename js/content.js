@@ -2,22 +2,27 @@
 // 接收popup页面的指令
 chrome.runtime.onMessage.addListener(function (req, sender, Res) {
   if (req === 'doit') {
+    var propertyRegion = document.querySelector('.region-detail-property')
     var kvWrap = document.querySelector('#dt-tab'),
-        colorWrap = document.querySelector('.list-leading'),
+        colorWrap = propertyRegion.querySelector('.list-leading'),
+        modelWrap = propertyRegion.querySelector('.table-sku'),
         descWrap = document.querySelector('.de-description-detail')
 
     var kvImgs = [],
         colorImgs = [],
+        modelImgs = [],
         descImgs = []
 
     var kvArr = [],
         colorArr = [],
+        modelArr = [],
         descArr = []
 
     var msgData = {}
 
     if (kvWrap) { kvImgs = kvWrap.querySelectorAll('img') }
     if (colorWrap) { colorImgs = colorWrap.querySelectorAll('img') }
+    if (modelWrap) { modelImgs = modelWrap.querySelectorAll('img') }
     if (descWrap) { descImgs = descWrap.querySelectorAll('img') }
 
     // 遍历KV图，小图改为 800x800 大图
@@ -33,6 +38,13 @@ chrome.runtime.onMessage.addListener(function (req, sender, Res) {
       colorArr.push({name, img})
     })
 
+    // 遍历规格图，小图改为 200x200 大图
+    modelImgs.forEach(function (img, i) {
+      var name = img.alt,
+          img = img.src.replace(/\.(\d{2}x\d{2})\./, '.200x200.')
+      modelArr.push({name, img})
+    })
+
     // 遍历描述图
     descImgs.forEach(function (img, i) {
       var lazysrc = img.getAttribute('data-lazyload-src')
@@ -43,6 +55,7 @@ chrome.runtime.onMessage.addListener(function (req, sender, Res) {
     // 发送结果数据
     kvArr.length && (msgData.kv = kvArr)
     colorArr.length && (msgData.color = colorArr)
+    modelArr.length && (msgData.model = modelArr)
     descArr.length && (msgData.desc = descArr)
 
     chrome.runtime.sendMessage(msgData)
