@@ -19,6 +19,7 @@ chrome.runtime.onMessage.addListener(function (req, sender, Res) {
         descArr = []
 
     var msgData = {}
+    var title = document.title
 
     if (kvWrap) { kvImgs = kvWrap.querySelectorAll('img') }
     if (colorWrap) { colorImgs = colorWrap.querySelectorAll('img') }
@@ -58,6 +59,6 @@ chrome.runtime.onMessage.addListener(function (req, sender, Res) {
     modelArr.length && (msgData.model = modelArr)
     descArr.length && (msgData.desc = descArr)
 
-    chrome.runtime.sendMessage(msgData)
+    chrome.runtime.sendMessage({msgData, title})
   }
 })
