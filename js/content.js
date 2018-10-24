@@ -25,23 +25,23 @@ chrome.runtime.onMessage.addListener(function (req, sender, Res) {
     if (modelWrap) { modelImgs = modelWrap.querySelectorAll('img') }
     if (descWrap) { descImgs = descWrap.querySelectorAll('img') }
 
-    // 遍历KV图，小图改为 800x800 大图
+    // 遍历KV图，取原图
     kvImgs.forEach(function (img, i) {
       var imgsrc = img.getAttribute('data-lazy-src') || img.src
-      kvArr.push({img: imgsrc.replace(/\.(\d{2}x\d{2})\./, '.800x800.')})
+      kvArr.push({img: imgsrc.replace(/\.(\d{2}x\d{2})/, '')})
     })
 
-    // 遍历颜色图，小图改为 200x200 大图
+    // 遍历颜色图，小图改为 300x300 大图
     colorImgs.forEach(function (img, i) {
       var name = img.alt,
-          img = img.src.replace(/\.(\d{2}x\d{2})\./, '.200x200.')
+          img = img.src.replace(/\.(\d{2}x\d{2})\./, '.300x300.')
       colorArr.push({name, img})
     })
 
     // 遍历规格图，小图改为 200x200 大图
     modelImgs.forEach(function (img, i) {
       var name = img.alt,
-          img = img.src.replace(/\.(\d{2}x\d{2})\./, '.200x200.')
+          img = img.src.replace(/\.(\d{2}x\d{2})\./, '.300x300.')
       modelArr.push({name, img})
     })
 
