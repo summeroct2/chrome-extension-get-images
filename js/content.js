@@ -1,95 +1,165 @@
 
 // 接收popup页面的指令
-// 支持 detail.1688, detail.tmall, item.taobao
+// 支持 detail.1688, detail.tmall, item.taobao, www.youzan.com
+
+const selectorMap = {
+  'detail.1688.com': {
+    kv:     '#dt-tab',
+    color:  '.list-leading',
+    model:  '.table-sku',
+    desc:   '.de-description-detail',
+  },
+  'detail.tmall.com': {
+    kv:     '#J_UlThumb',
+    color:  '.tm-img-prop',
+    desc:   '#description',
+  },
+  'item.taobao.com': {
+    kv:     '#J_UlThumb',
+    color:  '.J_Prop_Color',
+    desc:   '#description',
+  },
+  'www.youzan.com': {
+    kv:     '.goods-swiper-list',
+    desc:   '.market-goods-desc-detail',
+  }
+}
+
+const imgRuleMap = {
+  'detail.1688.com': {
+    kv:     /\.\d{2}x\d{2}/,
+    color:  /\.\d{2}x\d{2}/,
+    model:  /\.\d{2}x\d{2}/
+  },
+  'detail.tmall.com': {
+    kv:     /_\d{2}x\d{2}.+$/,
+    color:  /_\d{2}x\d{2}.+$/
+  },
+  'item.taobao.com': {
+    kv:     /_\d{2}x\d{2}.+$/,
+    color:  /_\d{2}x\d{2}.+$/
+  },
+  'www.youzan.com': {
+    kv:     /\?.*$/,
+    desc:   /\!.*$/
+  }
+}
+
+/**
+ * 获取目标容器的DOM对象
+ * @param   {String} hostName 主机名
+ * @param   {String} conName 容器名称
+ * @return  {Object} 容器的DOM对象
+ */
+const getContainer = (hostName, conName) => {
+  return document.querySelector(selectorMap[hostName][conName])
+}
+
+const getKVImgSrc = (kvImgs, regexp) => {
+  let imgs = []
+  kvImgs.forEach(function (img, i) {
+    var imgsrc = img.getAttribute('data-lazy-src') || img.src
+    var originSrc = imgsrc.replace(regexp, '')
+
+    imgs.push({img: originSrc})
+  })
+  return imgs
+}
+
+const getColorImgSrc = (colorImgs, regexp) => {
+  let imgs = []
+  colorImgs.forEach((img, i) => {
+    var name = img.alt,
+        img = img.src.replace(regexp, '')
+    imgs.push({name, img})
+  })
+  return imgs
+}
+
+const getColorTagAImgSrc = (colorImgs, regexp) => {
+  let imgs = []
+  colorImgs.forEach(function (a, i) {
+    var name = a.children[0].innerText,
+        imgurl = a.style.background.match(/url\(\"(.*)\"\)/)[1]
+        img = ''
+
+    imgurl = /https/.test(imgurl) ? imgurl : `https:${imgurl}`
+    img = imgurl.replace(regexp, '')
+
+    imgs.push({name, img})
+  })
+  return imgs
+}
+
+const getModelImgSrc = (modelImgs, regexp) => {
+  let imgs = []
+  modelImgs.forEach(function (img, i) {
+    var name = img.alt,
+        img = img.src.replace(regexp, '')
+    imgs.push({name, img})
+  })
+  return imgs
+}
+
+const getDescImgSrc = (descImgs, regexp) => {
+  let imgs = []
+  descImgs.forEach(function (img, i) {
+    var lazysrc = img.getAttribute('data-lazyload-src') 
+        || img.getAttribute('data-ks-lazyload') 
+        || img.getAttribute('data-echo') // youzan
+    var imgsrc = lazysrc ? (/https/.test(lazysrc) ? lazysrc : `https:${lazysrc}`) : img.src
+    if (regexp) {
+      imgsrc.replace(regexp, '')
+    }
+    imgs.push({img: imgsrc})
+  })
+  return imgs
+}
+
+const getItems = hostname => {
+  const kvWrap = getContainer(hostname, 'kv')
+  const colorWrap = getContainer(hostname, 'color')
+  const modelWrap = getContainer(hostname, 'model')
+  const descWrap = getContainer(hostname, 'desc')
+
+  const kvImgs = kvWrap && kvWrap.querySelectorAll('img'),
+        modelImgs = modelWrap && modelWrap.querySelectorAll('img'),
+        descImgs = descWrap && descWrap.querySelectorAll('img')
+  
+  let colorImgs = []
+  const elementsObj = {}
+
+  if (kvImgs && kvImgs.length) { elementsObj.kv = getKVImgSrc(kvImgs, imgRuleMap[hostname]['kv']) }
+  if (modelImgs && modelImgs.length) { elementsObj.model = getModelImgSrc(modelImgs, /\.(\d{2}x\d{2})\./) }
+  if (descImgs && descImgs.length) { elementsObj.desc = getDescImgSrc(descImgs) }
+
+  // 一些特殊处理
+  switch (hostname) {
+    case 'detail.1688.com':
+      colorImgs = colorWrap && colorWrap.querySelectorAll('img')
+      if (colorImgs && colorImgs.length) { elementsObj.color = getColorImgSrc(colorImgs, imgRuleMap[hostname]['color']) }
+      break
+    
+    case 'detail.tmall.com':
+    case 'item.taobao.com':
+      colorImgs = colorWrap && colorWrap.querySelectorAll('a')
+      if (colorImgs && colorImgs.length) { elementsObj.color = getColorTagAImgSrc(colorImgs, imgRuleMap[hostname]['color']) }
+      break
+    
+    case 'www.youzan.com':
+      if (descImgs && descImgs.length) { elementsObj.desc = getDescImgSrc(descImgs, imgRuleMap[hostname]['desc']) }
+      break
+  }
+  
+  return elementsObj
+}
+
 chrome.runtime.onMessage.addListener(function (req, sender, Res) {
   if (req === 'doit') {
-    // var propertyRegion = document.querySelector('.region-detail-property')
-    var kvWrap = document.querySelector('#dt-tab') || document.querySelector('#J_UlThumb'),
-        colorWrap = document.querySelector('.list-leading'),
-        colorWrapT = document.querySelector('.tm-img-prop') || document.querySelector('.J_Prop_Color'),
-        modelWrap = document.querySelector('.table-sku'),
-        descWrap = document.querySelector('.de-description-detail') || document.querySelector('#description')
-
-        // kv：J_UlThumb
-        // 颜色：J_Prop_Color, tm-img-prop
-        // description
-        // <img data-ks-lazyload="https://img.alicdn.com/imgextra/i3/2938780442/TB2NkjGcHuWBuNjSszgXXb8jVXa_!!2938780442.jpg">
-
-    var kvImgs = [],
-        colorImgs = [],
-        colorImgsT = [],
-        modelImgs = [],
-        descImgs = []
-
-    var kvArr = [],
-        colorArr = [],
-        modelArr = [],
-        descArr = []
-
-    var msgData = {}
-    var title = document.title
-
-    if (kvWrap) { kvImgs = kvWrap.querySelectorAll('img') }
-    if (colorWrap) { colorImgs = colorWrap.querySelectorAll('img')}
-    if (colorWrapT) { colorImgsT = colorWrapT.querySelectorAll('a')}
-    if (modelWrap) { modelImgs = modelWrap.querySelectorAll('img') }
-    if (descWrap) { descImgs = descWrap.querySelectorAll('img') }
-
-    // 遍历KV图，取原图
-    kvImgs.forEach(function (img, i) {
-      var imgsrc = img.getAttribute('data-lazy-src') || img.src
-      var regrule = new RegExp(/\.(\d{2}x\d{2})/)
-      var originSrc = ''
-
-      if (regrule.test(imgsrc)) {
-        originSrc = imgsrc.replace(regrule, '')
-      } else {
-        // 格式: xxx.jpg_50x50.jpg_.webp
-        originSrc = imgsrc.replace(/_\d{2}x\d{2}.+$/, '')
-      }
-
-      kvArr.push({img: originSrc})
-    })
-
-    // 遍历颜色图，小图改为 300x300 大图
-    colorImgs.forEach(function (img, i) {
-      var name = img.alt,
-          img = img.src.replace(/\.(\d{2}x\d{2})\./, '.300x300.')
-      colorArr.push({name, img})
-    })
-
-    // 天猫、淘宝颜色图
-    colorImgsT.forEach(function (a, i) {
-      var name = a.children[0].innerText,
-          imgurl = a.style.background.match(/url\(\"(.*)\"\)/)[1]
-          img = ''
-
-      imgurl = /https/.test(imgurl) ? imgurl : `https:${imgurl}`
-      img = imgurl.replace(/(_\d{2}x\d{2}.+$)/, '')
-
-      colorArr.push({name, img})
-    })
-
-    // 遍历规格图，小图改为 200x200 大图
-    modelImgs.forEach(function (img, i) {
-      var name = img.alt,
-          img = img.src.replace(/\.(\d{2}x\d{2})\./, '.300x300.')
-      modelArr.push({name, img})
-    })
-
-    // 遍历描述图
-    descImgs.forEach(function (img, i) {
-      var lazysrc = img.getAttribute('data-lazyload-src') || img.getAttribute('data-ks-lazyload')
-      var imgsrc = lazysrc ? (/https/.test(lazysrc) ? lazysrc : `https:${lazysrc}`) : img.src
-      descArr.push({img: imgsrc})
-    })
-
-    // 发送结果数据
-    kvArr.length && (msgData.kv = kvArr)
-    colorArr.length && (msgData.color = colorArr)
-    modelArr.length && (msgData.model = modelArr)
-    descArr.length && (msgData.desc = descArr)
-
+    const hostname = location.hostname
+    const title = document.title
+    const msgData = getItems(hostname)
+    
     chrome.runtime.sendMessage({msgData, title})
   }
 })

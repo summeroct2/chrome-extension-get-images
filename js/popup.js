@@ -92,7 +92,6 @@ chrome.runtime.onMessage.addListener(function (req, sender, Res) {
   var msgData = req.msgData
 
   chrome.browserAction.setBadgeText({text: ''})
-  
   docTitle = req.title
 
   // 渲染商品KV图
