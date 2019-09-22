@@ -1,6 +1,6 @@
 {
   "name": "抓图",
-  "version": "1.0.1",
+  "version": "1.0.5",
   "manifest_version": 2,
   "description": "抓取图片",
   "icons": {
@@ -17,7 +17,8 @@
       "https://detail.1688.com/*",
       "https://detail.tmall.com/*",
       "https://item.taobao.com/*",
-      "https://www.youzan.com/*"
+      "https://www.youzan.com/*",
+      "https://item.jd.com/*"
     ],
     "run_at": "document_end"
   }],

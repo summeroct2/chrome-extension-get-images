@@ -22,6 +22,11 @@ const selectorMap = {
   'www.youzan.com': {
     kv:     '.goods-swiper-list',
     desc:   '.market-goods-desc-detail',
+  },
+  'item.jd.com': {
+    kv:     '#spec-list',
+    color:  '#choose-attr-1',
+    desc:   '#J-detail-content',
   }
 }
 
@@ -42,8 +47,14 @@ const imgRuleMap = {
   'www.youzan.com': {
     kv:     /\?.*$/,
     desc:   /\!.*$/
+  },
+  'item.jd.com': {
+    kv:     /\/n\d{1}\//,
+    color:  /s\d{2,4}x\d{2,4}/,
   }
 }
+
+// img data-lazyload
 
 /**
  * 获取目标容器的DOM对象
@@ -55,44 +66,48 @@ const getContainer = (hostName, conName) => {
   return document.querySelector(selectorMap[hostName][conName])
 }
 
-const getKVImgSrc = (kvImgs, regexp) => {
+const getKVImgSrc = (kvImgs, regexp, as) => {
   let imgs = []
+  as = as || ''
   kvImgs.forEach(function (img, i) {
     var imgsrc = img.getAttribute('data-lazy-src') || img.src
-    var originSrc = imgsrc.replace(regexp, '')
+    var originSrc = imgsrc.replace(regexp, as)
 
     imgs.push({img: originSrc})
   })
   return imgs
 }
 
-const getColorImgSrc = (colorImgs, regexp) => {
+const getColorImgSrc = (colorImgs, regexp, as) => {
   let imgs = []
+  as = as || ''
   colorImgs.forEach((img, i) => {
     var name = img.alt,
-        img = img.src.replace(regexp, '')
-    imgs.push({name, img})
+        imgsrc = img.src.replace(regexp, as)
+    imgs.push({name, img: imgsrc})
   })
   return imgs
 }
 
-const getColorTagAImgSrc = (colorImgs, regexp) => {
+const getColorTagAImgSrc = (colorImgs, regexp, as) => {
   let imgs = []
+  as = as || ''
   colorImgs.forEach(function (a, i) {
     var name = a.children[0].innerText,
         imgurl = a.style.background.match(/url\(\"(.*)\"\)/)[1]
         img = ''
 
     imgurl = /https/.test(imgurl) ? imgurl : `https:${imgurl}`
-    img = imgurl.replace(regexp, '')
+    img = imgurl.replace(regexp, as)
 
     imgs.push({name, img})
   })
   return imgs
 }
 
-const getModelImgSrc = (modelImgs, regexp) => {
+const getModelImgSrc = (modelImgs, regexp, as) => {
   let imgs = []
+  as = as || ''
   modelImgs.forEach(function (img, i) {
     var name = img.alt,
         img = img.src.replace(regexp, '')
@@ -101,11 +116,13 @@ const getModelImgSrc = (modelImgs, regexp) => {
   return imgs
 }
 
-const getDescImgSrc = (descImgs, regexp) => {
+const getDescImgSrc = (descImgs, regexp, as) => {
   let imgs = []
+  as = as || ''
   descImgs.forEach(function (img, i) {
-    var lazysrc = img.getAttribute('data-lazyload-src') 
-        || img.getAttribute('data-ks-lazyload') 
+    var lazysrc = img.getAttribute('data-lazyload-src')
+        || img.getAttribute('data-ks-lazyload')
+        || img.getAttribute('data-lazyload') // jd
         || img.getAttribute('data-echo') // youzan
     var imgsrc = lazysrc ? (/https/.test(lazysrc) ? lazysrc : `https:${lazysrc}`) : img.src
     if (regexp) {
@@ -148,6 +165,12 @@ const getItems = hostname => {
     
     case 'www.youzan.com':
       if (descImgs && descImgs.length) { elementsObj.desc = getDescImgSrc(descImgs, imgRuleMap[hostname]['desc']) }
+      break
+
+    case 'item.jd.com':
+      colorImgs = colorWrap && colorWrap.querySelectorAll('img')
+      if (colorImgs && colorImgs.length) { elementsObj.color = getColorImgSrc(colorImgs, imgRuleMap[hostname]['color'], 's1080x1080') }
+      if (kvImgs && kvImgs.length) { elementsObj.kv = getKVImgSrc(kvImgs, imgRuleMap[hostname]['kv'], '/cms/') }
       break
   }
   
